@@ -6,6 +6,7 @@ interface Task {
   id: number;
   titulo: string;
   descripcion: string;
+  estado: boolean; 
 }
 
 interface TaskListProps {
@@ -14,67 +15,55 @@ interface TaskListProps {
 }
 
 const TaskList: React.FC<TaskListProps> = ({ filter, reload }) => {
-  const [tasks, setTasks] = useState<Task[]>([]); // Estado de las tareas
-  const [loading, setLoading] = useState(false); // Estado de carga
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  // Función para cargar tareas
   const loadTasks = async () => {
     setLoading(true);
     try {
-      const data = await fetchTasks();
-      console.log("Datos recibidos del backend:", data); // Verificar datos recibidos
-      setTasks(data); // Actualizar estado con los datos
+      const data = await fetchTasks(); // Carga todas las tareas desde el backend
+      setTasks(data); // Actualiza el estado local con las tareas cargadas
     } catch (error) {
-      console.error("Error al cargar las tareas:", error); // Manejar errores
+      console.error("Error al cargar las tareas:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  // useEffect para cargar tareas al montar el componente o al cambiar "reload"
   useEffect(() => {
     loadTasks();
   }, [reload]);
 
-  // Función para manejar la eliminación de una tarea
   const handleDeleteTask = async (taskId: number) => {
     try {
       await deleteTask(taskId);
-      // Filtrar las tareas eliminando la que coincide con el ID
-      setTasks(tasks.filter((task) => task.id !== taskId));
+      setTasks(tasks.filter((task) => task.id !== taskId)); 
     } catch (error) {
       console.error("Error al eliminar la tarea:", error);
     }
   };
 
-  // Función para filtrar tareas basado en la prop "filter"
+  // Filtrar tareas basado en el estado booleano
   const filteredTasks = tasks.filter((task) => {
     if (filter === "completed") {
-      // Aquí puedes agregar lógica si usas un campo "completed"
-      return false; // Ejemplo: task.completed === true
+      return task.estado === true;
     } else if (filter === "pending") {
-      // Aquí puedes agregar lógica si usas un campo "pending"
-      return false; // Ejemplo: task.completed === false
+      return task.estado === false; 
     }
-    return true; // Si no hay filtro, devolver todas las tareas
+    return true;
   });
-
-  // Verificar las tareas que se renderizan
-  console.log("Tareas a renderizar:", filteredTasks);
 
   return (
     <div>
       <h3 className="text-center mb-3">Lista de Tareas</h3>
       {loading && <p className="text-center">Cargando...</p>}
       <div className="row g-3">
-        {/* Mostrar mensaje si no hay tareas */}
         {filteredTasks.length === 0 && !loading ? (
           <p className="text-center">No hay tareas disponibles.</p>
         ) : (
-          // Renderizar las tareas disponibles
           filteredTasks.map((task) => (
             <div key={task.id} className="col-md-6">
-              <TaskItem task={task} onDeleteTask={handleDeleteTask} />
+              <TaskItem task={task} onDeleteTask={handleDeleteTask} onUpdateTask={loadTasks} />
             </div>
           ))
         )}

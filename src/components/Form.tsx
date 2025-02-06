@@ -3,7 +3,7 @@ import { addTask } from "../services/taskService";
 
 interface Props {
   onTaskAdded: () => void;
-  onFilterChange: (filter: string) => void; // Nueva función de filtrado
+  onFilterChange: (filter: string) => void; 
 }
 
 const Form: React.FC<Props> = ({ onTaskAdded, onFilterChange }) => {

@@ -5,8 +5,8 @@ import TaskList from "./components/TaskList";
 import "./css/index.css";
 
 const App: React.FC = () => {
-  const [filter, setFilter] = useState("all"); // Estado global del filtro
-  const [reload, setReload] = useState(false); // Estado para recargar la lista de tareas
+  const [filter, setFilter] = useState("all"); 
+  const [reload, setReload] = useState(false); 
 
   return (
     <div className="container mt-4">
